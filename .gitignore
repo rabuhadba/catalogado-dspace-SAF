@@ -1,0 +1,15 @@
+# Archivos de entorno y secretos
+.env
+
+# Carpetas de datos locales (paquetes y fotos)
+Proyectos/
+
+# Archivos de caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Otros
+.DS_Store
+Thumbs.db
