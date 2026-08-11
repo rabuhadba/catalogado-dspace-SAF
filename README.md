@@ -1,54 +1,62 @@
 # Creador y Catalogador SAF para DSpace
 
-Herramienta "Todo en Uno" escrita en Python que permite automatizar la creación de paquetes **Simple Archive Format (SAF)** para importar ítems a DSpace, incluyendo una fase de catalogación impulsada por inteligencia artificial (OpenAI).
+Este es un script en Python que permite automatizar la creacion de paquetes Simple Archive Format (SAF) para importar items a DSpace. Ademas, incluye una fase automatizada de catalogacion utilizando inteligencia artificial (OpenAI).
 
-## 🚀 Características
-- **Catalogación con IA integrada:** Analiza imágenes mediante OpenAI para extraer metadatos de forma automatizada y con lenguaje bibliográfico estricto.
-- **Generador Nativo en Python:** Emula el funcionamiento de la herramienta oficial `SAFBuilder` de Java, permitiéndote generar tu paquete de importación sin dependencias externas de Java.
-- **Mapeo Inteligente:** Traduce dinámicamente cualquier columna de un CSV (ej. `dc.title.alternative`, `fia.region`) en su archivo XML correspondiente (`dublin_core.xml`, `metadata_fia.xml`, etc.).
-- **Soporte Multivalor:** Separa automáticamente los valores por esquema (utilizando el delimitador `||`).
-- **Asignación de Colección:** Permite incluir el archivo de `collections` con el Handle directamente en los ítems de manera interactiva.
+## Caracteristicas principales
+- Catalogacion automatica: Analiza imagenes mediante OpenAI para extraer metadatos de forma automatizada y con lenguaje bibliografico estricto, sin que tengas que escribirlos uno por uno.
+- Generador de SAF directo: Emula el funcionamiento de la herramienta oficial SAFBuilder de Java, permitiendote generar tu paquete de importacion sin necesidad de instalar ni depender de Java.
+- Mapeo inteligente: Traduce automaticamente cualquier columna de un Excel/CSV (por ejemplo, dc.title o fia.region) en los archivos XML que DSpace necesita para entender los datos.
 
-## 📋 Requisitos
-Necesitarás Python 3 y las siguientes dependencias instaladas:
+---
 
-```bash
-pip install pandas openai python-dotenv Pillow
-```
+## Guia paso a paso para comenzar
 
-## ⚙️ Configuración inicial
-1. Renombra o crea un archivo llamado `.env` en el directorio raíz del script.
-2. Agrega tu clave de la API de OpenAI (necesaria para el proceso de catalogación):
-```env
-OPENAI_API_KEY="sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-```
-*(Si no provees una API Key, el script omitirá la catalogación con IA y pasará directo a la generación de SAF basándose en los metadatos existentes de tu CSV).*
+Si no tienes experiencia programando, sigue estos pasos al pie de la letra para usar el script:
 
-## 📁 Estructura del Input
-Para que el script reconozca tu proyecto, debes tener una carpeta con esta estructura básica:
+### 1. Preparar el entorno de trabajo
+1. Abre este proyecto en Visual Studio Code.
+2. Abre la terminal de Visual Studio Code. Para hacerlo, presiona las teclas `CTRL + Ñ` (o `CTRL + Shift + \`` dependiendo de tu teclado), o ve al menu superior "Terminal" > "Nuevo Terminal".
+3. En la terminal que aparece abajo, escribe el siguiente comando y presiona Enter para instalar las dependencias necesarias:
+   ```bash
+   pip install pandas openai python-dotenv Pillow
+   ```
+
+### 2. Configurar la clave de Inteligencia Artificial
+Para que el script pueda "ver" las imagenes y describirlas, necesita conectarse a OpenAI.
+1. En el panel de la izquierda (donde se ven los archivos), haz clic derecho y selecciona "Nuevo archivo".
+2. Nombralo exactamente `.env` (no olvides el punto al inicio).
+3. Abre ese archivo `.env` y pega tu clave de API de la siguiente manera:
+   ```env
+   OPENAI_API_KEY="sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+   ```
+   *Nota: Si no haces este paso, el script no podra catalogar con IA, pero si podra armar el SAF asumiendo que tu CSV ya tiene toda la informacion llena.*
+
+### 3. Preparar tus archivos (Imagenes y CSV)
+El script necesita saber donde estan tus fotos y tu tabla de datos. Para que funcione sin problemas, pon tus archivos organizados de la siguiente forma dentro de una carpeta:
 
 ```text
-Mi_Proyecto/
- ├── Un_archivo.csv (o Catalogo_OpenAI_Completo.csv)
+Nombre_de_tu_Proyecto/
+ ├── Catalogo_Datos.csv (tu archivo con la informacion)
  ├── foto_1.jpg
  ├── foto_2.jpg
  └── foto_3.png
 ```
-*(Nota: Opcionalmente puedes guardar tus imágenes dentro de una subcarpeta llamada `Fotos/`).*
 
-### Formato del CSV
-- Obligatorio tener una columna llamada **`nombre archivo`** (en minúscula) con el nombre exacto de la imagen correspondiente.
-- Usa los prefijos de DSpace en el encabezado para los metadatos (ej: `dc.description`, `dc.subject`, `dc.type`).
+Reglas muy importantes para tu archivo CSV:
+- Debe estar guardado como archivo CSV (separado por comas), no como libro de Excel (.xlsx).
+- Debe tener obligatoriamente una columna llamada **nombre archivo** (todo en minuscula), la cual debe contener el nombre exacto de la foto (por ejemplo: foto_1.jpg).
+- Los encabezados para los datos deben usar el formato de DSpace (ejemplo: dc.description, dc.subject).
 
-## 🛠️ Modo de Uso
-Ejecuta el script desde tu terminal:
+### 4. Ejecutar el script
+Una vez tengas todo listo, vuelve a la terminal de Visual Studio Code (`CTRL + Ñ`), escribe lo siguiente y presiona Enter:
 
 ```bash
 python creador_saf.py
 ```
 
-El script te guiará paso a paso:
-1. Te pedirá elegir la carpeta de red a copiar, o te listará los proyectos locales que tengas.
-2. Te preguntará si quieres añadir el Handle para el archivo `collections` de forma general.
-3. Si el CSV tiene celdas vacías, **te preguntará si quieres catalogar las imágenes pendientes con OpenAI**.
-4. ¡El script hará todo el trabajo! Dejará tus paquetes listos dentro de una carpeta llamada `SAF/` en el directorio de tu proyecto.
+El programa se iniciara y te ira guiando paso a paso mediante preguntas en pantalla:
+1. Te pedira ingresar la ruta de la carpeta donde tienes tus fotos y tu CSV (puedes copiar la ruta y pegarla).
+2. Te preguntara si quieres asociar todas las imagenes a una Coleccion en especifico de DSpace mediante un Handle (por ejemplo, 12345/6).
+3. Si a tu CSV le faltan los titulos o descripciones, el programa detectara esto y te preguntara si quieres que la IA procese y describa las fotos faltantes.
+
+Cuando el programa termine, encontraras una nueva carpeta llamada "SAF" lista para ser importada directamente a tu servidor de DSpace.
